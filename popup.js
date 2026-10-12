@@ -3,20 +3,31 @@ function israelTimestamp() {
   return new Date().toLocaleString("sv-SE", { timeZone: "Asia/Jerusalem" });
 }
 
-// Temporary hardcoded data so the form can be checked before detection exists.
-const SAMPLE = {
-  company: "Acme Corp",
-  jobTitle: "Software Engineer Intern",
-  jobNumber: "REQ-1234",
-  timestamp: israelTimestamp(),
-  postingUrl: "https://example.com/jobs/1234",
-  source: "Example",
-  location: "Remote",
-};
-
-for (const [key, value] of Object.entries(SAMPLE)) {
-  document.getElementById(key).value = value;
+// Runs content.js inside the active tab and returns what it detected.
+// Fails (returns {}) on pages Chrome won't let extensions touch, like chrome:// pages.
+async function detectFromPage() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [injection] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["content.js"],
+    });
+    return injection.result || {};
+  } catch (err) {
+    console.warn("Could not read the page:", err);
+    return {};
+  }
 }
+
+async function prefillForm() {
+  const detected = await detectFromPage();
+  detected.timestamp = israelTimestamp();
+  for (const [key, value] of Object.entries(detected)) {
+    document.getElementById(key).value = value;
+  }
+}
+
+prefillForm();
 
 // Keys in Sheet column order; doPost reads each one by name.
 const FIELDS = [
