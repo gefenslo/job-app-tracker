@@ -74,31 +74,53 @@
     return url.toString();
   }
 
+  // Job boards are named; anything else (Workday, Greenhouse, an employer's own site...)
+  // is the employer's application system, so it counts as the company website.
   function detectSource() {
     const host = location.hostname.replace(/^www\./, "");
-    const known = {
+    const boards = {
       "linkedin.com": "LinkedIn",
-      "greenhouse.io": "Greenhouse",
-      "lever.co": "Lever",
-      "myworkdayjobs.com": "Workday",
       "indeed.com": "Indeed",
       "glassdoor.com": "Glassdoor",
-      "ashbyhq.com": "Ashby",
-      "smartrecruiters.com": "SmartRecruiters",
     };
-    for (const [domain, name] of Object.entries(known)) {
+    for (const [domain, name] of Object.entries(boards)) {
       if (host === domain || host.endsWith("." + domain)) return name;
     }
-    return host;
+    return "Company website";
+  }
+
+  // Workday puts the employer in the subdomain (nvidia.wd5.myworkdayjobs.com), which is
+  // more recognizable than the legal entity in the page data ("IL00 Mellanox Technologies, Ltd.").
+  const COMPANY_NAMES = { nvidia: "NVIDIA" }; // fix capitalization the subdomain can't carry
+  function companyFromHost() {
+    if (!location.hostname.endsWith(".myworkdayjobs.com")) return "";
+    const slug = location.hostname.split(".")[0];
+    return COMPANY_NAMES[slug.toLowerCase()] || slug.charAt(0).toUpperCase() + slug.slice(1);
+  }
+
+  // Look for the resume file name the application page is showing: a chosen <input type=file>,
+  // else a short piece of text that looks like a document file name (e.g. "My_CV.pdf").
+  function detectResumeFile() {
+    for (const input of document.querySelectorAll('input[type="file"]')) {
+      if (input.files?.[0]) return input.files[0].name;
+    }
+    const fileName = /^[^\n/\\]{1,100}\.(pdf|docx?|rtf|odt)$/i;
+    for (const el of document.querySelectorAll("body *")) {
+      if (el.children.length === 0 && fileName.test(clean(el.textContent))) {
+        return clean(el.textContent);
+      }
+    }
+    return "";
   }
 
   return {
-    company: clean(ld?.hiringOrganization?.name) || meta("og:site_name"),
+    company: companyFromHost() || clean(ld?.hiringOrganization?.name) || meta("og:site_name"),
     jobTitle: clean(ld?.title) || meta("og:title") || clean(document.querySelector("h1")?.textContent) || clean(document.title),
     jobNumber: detectJobNumber(),
     postingUrl: cleanUrl(),
     source: detectSource(),
     location: detectLocation(),
     salaryRange: detectSalary(),
+    resumeVersion: detectResumeFile(),
   };
 })();

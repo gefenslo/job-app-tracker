@@ -22,6 +22,11 @@ async function detectFromPage() {
 async function prefillForm() {
   const detected = await detectFromPage();
   detected.timestamp = israelTimestamp();
+  if (!detected.resumeVersion) {
+    // chrome.storage.local keeps small data between popup opens (the popup itself forgets everything).
+    const { lastResume } = await chrome.storage.local.get("lastResume");
+    detected.resumeVersion = lastResume || "";
+  }
   for (const [key, value] of Object.entries(detected)) {
     document.getElementById(key).value = value;
   }
@@ -65,6 +70,7 @@ form.addEventListener("submit", async (event) => {
     const result = await response.json();
     if (result.success) {
       showMessage("Saved to your sheet.", "success");
+      if (payload.resumeVersion) chrome.storage.local.set({ lastResume: payload.resumeVersion });
     } else {
       showMessage(`Error: ${result.error || "unknown error"}`, "error");
     }
