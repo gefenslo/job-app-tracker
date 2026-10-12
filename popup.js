@@ -1,9 +1,14 @@
+// "YYYY-MM-DD HH:mm:ss" in Israel time (the sv-SE locale happens to use that layout).
+function israelTimestamp() {
+  return new Date().toLocaleString("sv-SE", { timeZone: "Asia/Jerusalem" });
+}
+
 // Temporary hardcoded data so the form can be checked before detection exists.
 const SAMPLE = {
   company: "Acme Corp",
   jobTitle: "Software Engineer Intern",
   jobNumber: "REQ-1234",
-  timestamp: new Date().toISOString(),
+  timestamp: israelTimestamp(),
   postingUrl: "https://example.com/jobs/1234",
   source: "Example",
   location: "Remote",
