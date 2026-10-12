@@ -1,0 +1,10 @@
+{
+  "name": "Job Tracker",
+  "description": "Extension to track job applications and their statuses.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "hello.html",
+    "default_icon": "icon.png"
+  }
+}
