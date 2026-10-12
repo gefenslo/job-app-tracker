@@ -3,9 +3,35 @@
   <head>
     <meta charset="utf-8">
     <title>Job Tracker</title>
+    <link rel="stylesheet" href="popup.css">
   </head>
   <body>
     <h1>Job Tracker</h1>
+    <!-- Field order and ids must match the Sheet columns and doPost's appendRow array. -->
+    <form id="job-form">
+      <label>Company <input id="company" name="company" type="text"></label>
+      <label>Job title <input id="jobTitle" name="jobTitle" type="text"></label>
+      <label>Job number / req ID <input id="jobNumber" name="jobNumber" type="text"></label>
+      <label>Timestamp <input id="timestamp" name="timestamp" type="text"></label>
+      <label>Status
+        <select id="status" name="status">
+          <option>Applied</option>
+          <option>Interview</option>
+          <option>Offer</option>
+          <option>Rejected</option>
+        </select>
+      </label>
+      <label>Response date <input id="responseDate" name="responseDate" type="date"></label>
+      <label>Posting URL <input id="postingUrl" name="postingUrl" type="text"></label>
+      <label>Source <input id="source" name="source" type="text"></label>
+      <label>Location <input id="location" name="location" type="text"></label>
+      <label>Salary range <input id="salaryRange" name="salaryRange" type="text"></label>
+      <label>Resume version <input id="resumeVersion" name="resumeVersion" type="text"></label>
+      <label>Notes <textarea id="notes" name="notes" rows="3"></textarea></label>
+      <button id="save" type="submit">Save</button>
+      <p id="message" role="status"></p>
+    </form>
+    <script src="config.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

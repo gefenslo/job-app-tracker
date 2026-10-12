@@ -1,0 +1,8 @@
+body { width: 340px; margin: 12px; font: 13px system-ui, sans-serif; }
+h1 { font-size: 16px; margin: 0 0 8px; }
+label { display: block; margin-bottom: 6px; font-weight: 600; }
+input, select, textarea { display: block; width: 100%; box-sizing: border-box; margin-top: 2px; font: inherit; }
+button { width: 100%; padding: 6px; margin-top: 4px; }
+#message { min-height: 1.2em; margin: 8px 0 0; }
+#message.success { color: #1a7f37; }
+#message.error { color: #c62828; }
